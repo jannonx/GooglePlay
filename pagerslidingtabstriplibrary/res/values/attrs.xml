@@ -13,6 +13,15 @@
         <attr name="pstsTabBackground" format="reference" />
         <attr name="pstsShouldExpand" format="boolean" />
         <attr name="pstsTextAllCaps" format="boolean" />
+
+        <!--* 文本默认的颜色
+   		* 文本默认的字体大小
+   		* 文本选中的颜色
+   		* 文本选中的字体大小-->
+        <attr name="pstsTabTextColor" format="color"></attr>
+        <attr name="pstsTabTextSize" format="dimension"></attr>
+        <attr name="pstsTabTextSelectedColor" format="color"></attr>
+        <attr name="pstsTabTextSelectedSize" format="dimension"></attr>
     </declare-styleable>
 
 </resources>

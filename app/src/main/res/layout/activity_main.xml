@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:jannonx="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="jannonx.com.googleplay.activity.MainActivity">
 
-    <com.astuetz.PagerSlidingTabStrip
+    <com.astuetz.PagerSlidingTabStripExtends
         android:id="@+id/main_tabs"
         android:layout_width="match_parent"
-        android:layout_height="48dip" />
+        android:layout_height="48dip"
+
+        jannonx:pstsIndicatorColor="@color/tab_indicator_selected"
+        jannonx:pstsTabTextColor="@color/tab_text_selected"
+        jannonx:pstsTabTextSelectedColor="@color/tab_text_normal"
+        jannonx:pstsTabTextSelectedSize="@dimen/tab_text_selected_size"
+        jannonx:pstsTabTextSize="@dimen/tab_text_normal_size"
+
+        />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/main_vp"
