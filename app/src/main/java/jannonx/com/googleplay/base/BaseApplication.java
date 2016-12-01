@@ -18,6 +18,18 @@ public class BaseApplication extends Application {
     private static Handler mHandler;
     private static Context mContext;
 
+    public static Context getContext() {
+        return mContext;
+    }
+
+    public static Handler getHandler() {
+        return mHandler;
+    }
+
+    public static long getMainThread() {
+        return mMainThread;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
