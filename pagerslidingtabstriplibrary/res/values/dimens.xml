@@ -1,0 +1,11 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <!--文本正常大小-->
+    <dimen name="tab_text_normal_size">15sp</dimen>
+    <!--文本选中大小-->
+    <dimen name="tab_text_selected_size">20sp</dimen>
+
+</resources>
