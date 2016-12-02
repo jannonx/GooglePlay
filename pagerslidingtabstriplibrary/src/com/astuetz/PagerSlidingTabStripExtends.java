@@ -22,6 +22,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Path;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Parcel;
@@ -353,8 +354,29 @@ public class PagerSlidingTabStripExtends extends HorizontalScrollView {
             lineLeft = (currentPositionOffset * nextTabLeft + (1f - currentPositionOffset) * lineLeft);
             lineRight = (currentPositionOffset * nextTabRight + (1f - currentPositionOffset) * lineRight);
         }
+        //计算
+//        canvas.drawRect(lineLeft, height - indicatorHeight, lineRight, height, rectPaint);
 
-        canvas.drawRect(lineLeft, height - indicatorHeight, lineRight, height, rectPaint);
+
+        //------------------------- add begain  -------------------------//
+        //draw  indicator triangle
+        Path path = new Path();
+        int triangleWidth = 20;
+        float x1 = (lineRight - lineLeft) / 2 + lineLeft;
+        float y1 = height - indicatorHeight;
+        float x2 = x1 + triangleWidth / 2;
+        float y2 = height;
+        float x3 = x1 - triangleWidth / 2;
+        float y3 = height;
+
+        path.moveTo(x1, y1);
+        path.lineTo(x2, y2);
+        path.lineTo(x3, y3);
+        path.lineTo(x1, y1);
+
+        canvas.drawPath(path, rectPaint);
+
+        //------------------------- add end  -------------------------//
 
         // draw underline
 

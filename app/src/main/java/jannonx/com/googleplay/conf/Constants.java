@@ -1,5 +1,7 @@
 package jannonx.com.googleplay.conf;
 
+import jannonx.com.googleplay.utils.LogUtils;
+
 /**
  * @项目名 GooglePlay
  * @创建者 jannonx
@@ -8,5 +10,5 @@ package jannonx.com.googleplay.conf;
  */
 
 public class Constants {
-    public static final int DEBUGLEVEL = 7;
+    public static final int DEBUGLEVEL = LogUtils.LEVEL_ALL;
 }

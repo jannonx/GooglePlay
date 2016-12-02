@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.widget.RelativeLayout;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.astuetz.PagerSlidingTabStripExtends;
 
 import butterknife.BindView;
@@ -25,8 +26,6 @@ public class MainActivity extends FragmentActivity {
     PagerSlidingTabStripExtends mMainTabs;
     @BindView(R.id.main_vp)
     ViewPager mMainVp;
-    @BindView(R.id.activity_main)
-    RelativeLayout mActivityMain;
     private String[] mStringArr;
 
     @Override
@@ -44,9 +43,7 @@ public class MainActivity extends FragmentActivity {
 
     private void initEvent() {
 
-
     }
-
     private void initData() {
         //数据
         mStringArr = UIUtils.getStringArr(R.array.main_titls);

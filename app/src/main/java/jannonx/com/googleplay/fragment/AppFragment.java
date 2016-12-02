@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import jannonx.com.googleplay.base.BaseFragment;
 import jannonx.com.googleplay.utils.UIUtils;
 
 /**
@@ -21,11 +22,10 @@ import jannonx.com.googleplay.utils.UIUtils;
  * @描述信息 desc
  */
 
-public class AppFragment extends Fragment {
+public class AppFragment extends BaseFragment {
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    protected View initView() {
         TextView textView = new TextView(UIUtils.getContext());
         textView.setText(getClass().getSimpleName());
         textView.setTextColor(Color.BLACK);
