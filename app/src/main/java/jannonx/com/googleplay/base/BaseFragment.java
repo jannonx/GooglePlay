@@ -6,63 +6,68 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+
+import jannonx.com.googleplay.utils.LogUtils;
+import jannonx.com.googleplay.utils.UIUtils;
 
 /**
  * @项目名 GooglePlay
  * @创建者 jannonx
- * @创建时间 2016/12/2-下午3:54
- * @描述信息 Fragment的基类
+ * @创建时间 2016/12/2-下午4:11
+ * @描述信息 desc
  */
 
 public abstract class BaseFragment extends Fragment {
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        init();
-        super.onCreate(savedInstanceState);
-    }
+    private LoadingPager mLoadingPager;
 
+    public LoadingPager getLoadingPager() {
+        return mLoadingPager;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return initView();
+        /**
+         * @desc 真正开始加载数据，在子线程中执行
+         * @desc 必须实现，但是不知道具体实现，定义成为抽象方法，交给子类具体实现
+         * @call 外界调用triggerLoadDate的时候
+         *
+         */
+        if (mLoadingPager == null) {//第一次走
+
+            mLoadingPager = new LoadingPager(UIUtils.getContext()) {
+                @Override
+                protected View initSuccessView() {
+                    return BaseFragment.this.initSuccessView();
+                }
+
+                @Override
+                protected LoadedResult initData() {
+                    return BaseFragment.this.initData();
+                }
+            };
+        } else {//第二次进来
+            ViewParent parent = mLoadingPager.getParent();
+            if (parent != null && parent instanceof ViewGroup) {
+                ((ViewGroup) parent).removeView(mLoadingPager);
+            }
+        }
+
+        //刷新
+//        loadingPager.triggerLoadDate();
+
+        return mLoadingPager;//---ViewGroup
     }
 
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        initData();
-        initListener();
-        super.onActivityCreated(savedInstanceState);
-    }
+    protected abstract View initSuccessView();
 
     /**
-     * @desc 初始化
-     * @call 子类可以选择性复写的方法
-     */
-    protected void init() {
-    }
-
-    /**
-     * @desc 初始化视图
-     * @call 子类必须复写的方法
-     */
-    protected abstract View initView();
-
-    /**
-     * @desc 初始化数据
-     * @call 子类可以选择性复写的方法
-     */
-    protected void initData() {
-
-    }
-
-    /**
-     * @desc 初始化监听
-     * @call 子类可以选择性复写的方法
+     * @desc 真正开始加载数据，在子线程中执行
+     * @desc 必须实现，但是不知道具体实现，定义成为抽象方法，交给子类具体实现
+     * @call 外界调用triggerLoadDate的时候
      */
 
-    private void initListener() {
-    }
+    protected abstract LoadingPager.LoadedResult initData();
 }

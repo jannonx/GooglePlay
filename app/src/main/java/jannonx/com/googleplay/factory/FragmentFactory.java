@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 import java.util.Map;
 
+import jannonx.com.googleplay.base.BaseFragment;
 import jannonx.com.googleplay.fragment.AppFragment;
 import jannonx.com.googleplay.fragment.CategoryFragment;
 import jannonx.com.googleplay.fragment.GameFragment;
@@ -35,11 +36,12 @@ public class FragmentFactory {
     private static final int CATEGORY_FRAGMENT = 5;
     private static final int HOT_FRAGMENT = 6;
 
-    private static Map<Integer, Fragment> mCacheFragmentMap = new HashMap<>();
+    private static Map<Integer, BaseFragment> mCacheFragmentMap = new HashMap<>();
 
 
-    public static Fragment createFragemnt(int index) {
-        Fragment fragemnt = null;
+    public static BaseFragment createFragemnt(int index) {
+        //返回具体fragment的基类
+        BaseFragment fragemnt = null;
 
         //判断集合是否存在fragment
         if (mCacheFragmentMap.containsKey(index)) {

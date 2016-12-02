@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 
 import com.astuetz.PagerSlidingTabStrip;
@@ -14,6 +15,8 @@ import com.astuetz.PagerSlidingTabStripExtends;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jannonx.com.googleplay.R;
+import jannonx.com.googleplay.base.BaseFragment;
+import jannonx.com.googleplay.base.LoadingPager;
 import jannonx.com.googleplay.factory.FragmentFactory;
 import jannonx.com.googleplay.utils.UIUtils;
 
@@ -27,6 +30,7 @@ public class MainActivity extends FragmentActivity {
     @BindView(R.id.main_vp)
     ViewPager mMainVp;
     private String[] mStringArr;
+    private MyOnPageChangeListener mMyOnPageChangeListener = new MyOnPageChangeListener();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +41,30 @@ public class MainActivity extends FragmentActivity {
         initView();
         initData();
         initEvent();
+        initListener();
 
     }
 
+    private void initListener() {
+        mMainTabs.setOnPageChangeListener(mMyOnPageChangeListener);
+
+        //默认选中第一个页面home
+        mMainVp.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                //手动触发onPageSelected方法
+                mMyOnPageChangeListener.onPageSelected(0);
+                //仅仅手动触发一次
+                mMainVp.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+
+            }
+        });
+    }
 
     private void initEvent() {
 
     }
+
     private void initData() {
         //数据
         mStringArr = UIUtils.getStringArr(R.array.main_titls);
@@ -59,6 +80,35 @@ public class MainActivity extends FragmentActivity {
 
     private void initView() {
 
+
+    }
+
+    //LoadingPager的triggerLoadDate()
+    class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            //开始加载的时候，触发LoadingPager的triggerLoadDate()
+            //此时的Fragment肯定是已经创建过得fragment了
+            BaseFragment baseFragment = FragmentFactory.createFragemnt(position);
+            if (baseFragment != null) {
+                LoadingPager loadingPager = baseFragment.getLoadingPager();
+                if (loadingPager != null) {
+                    loadingPager.triggerLoadDate();
+                }
+            }
+
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
 
     }
 

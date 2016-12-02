@@ -3,6 +3,7 @@ package jannonx.com.googleplay.utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
+import android.os.Process;
 
 import jannonx.com.googleplay.base.BaseApplication;
 
@@ -87,6 +88,26 @@ public class UIUtils {
      * @return
      */
     public static long getMainThread() {
+
         return BaseApplication.getMainThread();
+    }
+
+
+    /**
+     * 安全的执行一个Task
+     */
+
+    public static void postTaskSafely(Runnable task) {
+        //当前线程是子线程，通过消息机制,把任务就给主线程的handler执行
+        //当前线程是主线程，直接执行任务
+
+        //得到主线程id
+        int curThreadId = Process.myTid();
+        long mainThreadId = getMainThread();
+        if (curThreadId == mainThreadId) {
+            task.run();
+        } else {
+            getHandler().post(task);
+        }
     }
 }
