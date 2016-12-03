@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import jannonx.com.googleplay.R;
+import jannonx.com.googleplay.factory.ThreadPoolExecutorProxyFactory;
 import jannonx.com.googleplay.utils.UIUtils;
 
 /**
@@ -73,6 +74,7 @@ public abstract class LoadingPager extends FrameLayout {
         });
         //控制空视图的显示  0  显示  8 隐藏
         mEmptyView.setVisibility((mCurrentPage == STATE_EMPTYVIEW) ? View.VISIBLE : View.GONE);
+
         //数据加载成功了，而且成功视图没有
         if (mCurrentPage == STATE_SUCCESSVIEW && mSuccessView == null) {
             mSuccessView = initSuccessView();
@@ -104,7 +106,9 @@ public abstract class LoadingPager extends FrameLayout {
             mCurrentPage = STATE_LOADINGVIEW;
             refreshUIByState();
             //异步加载数据
-            new Thread(new LoadDataTask()).start();
+//            new Thread(new LoadDataTask()).start();
+            //交给工厂处理
+            ThreadPoolExecutorProxyFactory.getNormalThreadPoolExecutorProxy().execute(new LoadDataTask());
         }
     }
 
@@ -115,6 +119,7 @@ public abstract class LoadingPager extends FrameLayout {
      * @call 外界调用triggerLoadDate的时候
      */
     protected abstract LoadedResult initData();
+
 
     public enum LoadedResult {
         SUCCESS(STATE_SUCCESSVIEW), EMPTY(STATE_EMPTYVIEW), ERROR(STATE_ERRORVIEW);
