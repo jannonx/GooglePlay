@@ -11,4 +11,12 @@ import jannonx.com.googleplay.utils.LogUtils;
 
 public class Constants {
     public static final int DEBUGLEVEL = LogUtils.LEVEL_ALL;
+
+    /**
+     * 分类管理
+     */
+    public static final class URLS {
+        public static final String BASEURL = "http://192.168.56.1:8080/GooglePlayServer/";
+        public static final String IMAGEURL = BASEURL + "image?name=";
+    }
 }

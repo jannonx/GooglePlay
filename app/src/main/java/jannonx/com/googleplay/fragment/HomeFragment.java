@@ -1,22 +1,39 @@
 package jannonx.com.googleplay.fragment;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.SystemClock;
+import android.support.annotation.RequiresApi;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import java.util.ArrayList;
+
+import com.google.gson.Gson;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+
+import java.io.IOException;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 
 import jannonx.com.googleplay.base.BaseFragment;
 import jannonx.com.googleplay.base.BaseHolder;
 import jannonx.com.googleplay.base.LoadingPager;
-import jannonx.com.googleplay.base.MyBaseAdapter;
 import jannonx.com.googleplay.base.SuperBaseAdapter;
+import jannonx.com.googleplay.bean.AppInfoBean;
+import jannonx.com.googleplay.bean.HomeBean;
+import jannonx.com.googleplay.conf.Constants;
 import jannonx.com.googleplay.holder.HomeHolder;
+import jannonx.com.googleplay.holder.LoadMoreHolder;
+import jannonx.com.googleplay.utils.OkUtils;
 import jannonx.com.googleplay.utils.UIUtils;
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * @项目名 GooglePlay
@@ -28,6 +45,10 @@ import jannonx.com.googleplay.utils.UIUtils;
 public class HomeFragment extends BaseFragment {
 
     private List<String> mData;
+    private List<AppInfoBean> mAppInfoBeens;
+    private List<String> mPictures;
+    private LoadingPager.LoadedResult mLoadedResult;
+
 
     /**
      * @desc 正在开始加载数据，在子线程中执行
@@ -41,7 +62,7 @@ public class HomeFragment extends BaseFragment {
         listView.setCacheColorHint(Color.TRANSPARENT);
         //可以快速滑动
         listView.setFastScrollEnabled(true);
-        listView.setAdapter(new HomeAdapter(mData));
+        listView.setAdapter(new HomeAdapter(listView, mAppInfoBeens));
         return listView;
     }
 
@@ -50,113 +71,82 @@ public class HomeFragment extends BaseFragment {
      * @call 外界调用LoadingPager的triggerLoadDate()的时候
      */
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected LoadingPager.LoadedResult initData() {
         SystemClock.sleep(1000);
-//        private static final int STATE_ERRORVIEW = 1;//失败
-//        private static final int STATE_EMPTYVIEW = 2;//空
-//        private static final int STATE_SUCCESSVIEW = 3;//成功
 
-        mData = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            mData.add(i + "");
+
+        try {
+            String url = Constants.URLS.BASEURL + "home?index=0";
+            String stringFromServer = OkUtils.getStringFromServer(url);
+            Gson gson = new Gson();
+
+            HomeBean homeBean = gson.fromJson(stringFromServer, HomeBean.class);
+
+            //处理json数据
+            LoadingPager.LoadedResult state = checkState(homeBean);
+
+
+            if (state != LoadingPager.LoadedResult.SUCCESS) {//有问题  homeBean==null
+                return state;
+            }
+
+            state = checkState(homeBean.list);
+
+
+            if (state != LoadingPager.LoadedResult.SUCCESS) {//  homeBean.list.size()==0
+                return state;
+            }
+
+            //赋值
+            mAppInfoBeens = homeBean.list;
+            mPictures = homeBean.picture;
+
+            return state;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        LoadingPager.LoadedResult[] loadedResults = {LoadingPager.LoadedResult.EMPTY,
-                LoadingPager.LoadedResult.ERROR, LoadingPager.LoadedResult.SUCCESS};
+        return LoadingPager.LoadedResult.SUCCESS;
 
-        Random random = new Random();
-        int nextInt = random.nextInt(loadedResults.length);
-        return loadedResults[2];
     }
 
-    /**
-     * HomeAdapter  最终版
-     */
-    private class HomeAdapter extends SuperBaseAdapter<String> {
 
-        public HomeAdapter(List<String> data) {
-            super(data);
+    class HomeAdapter extends SuperBaseAdapter<AppInfoBean> {
+
+        public HomeAdapter(AbsListView absListView, List<AppInfoBean> data) {
+            super(absListView, data);
         }
 
         @Override
-        protected BaseHolder<String> getSpecialHolder() {
+        protected BaseHolder<AppInfoBean> getSpecialHolder() {
             return new HomeHolder();
         }
-    }
 
-    /**HomeAdapter  v2版*/
-
-   /* private class HomeAdapter extends MyBaseAdapter {
-
-
-        public HomeAdapter(List data) {
-            super(data);
+        @Override
+        protected List<AppInfoBean> onLoadMore() throws Exception {
+            return performLoadMore();
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            *//*------------------------- 决定根部局  -------------------------*//*
-            HomeHolder homeHolder = null;
-            if (convertView == null) {
-                homeHolder = new HomeHolder();
-            } else {
-                homeHolder = (HomeHolder) convertView.getTag();
-            }
-
-            *//*------------------------- 得到数据  -------------------------*//*
-            //赋值
-            String data = mData.get(position);
-
-            *//*------------------------- 视图和数据的绑定  -------------------------*//*
-            homeHolder.setDataAndBindView(data);
-
-            return  homeHolder.mHodlerView;
-        }
-    }*/
-
-
-    /**HomeAdapter  v1版*/
-
-   /* private class HomeAdapter extends MyBaseAdapter {
-
-
-        public HomeAdapter(List data) {
-            super(data);
+        protected void onNormalItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Toast.makeText(UIUtils.getContext(), mAppInfoBeens.get(position).packageName, Toast.LENGTH_SHORT).show();
         }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            *//*------------------------- 决定根部局  -------------------------*//*
-            ViewHolder viewHolder = null;
-            if (convertView == null) {
-                viewHolder = new ViewHolder();
+        private List<AppInfoBean> performLoadMore() throws Exception {
+            SystemClock.sleep(2000);
+            String url = Constants.URLS.BASEURL + "home?index=" + mAppInfoBeens.size();
+            String stringFromServer = OkUtils.getStringFromServer(url);
+            Gson gson = new Gson();
 
-                //加载界面
-                convertView = View.inflate(UIUtils.getContext(), R.layout.item_temp, null);
+            HomeBean homeBean = gson.fromJson(stringFromServer, HomeBean.class);
 
-                viewHolder.tv_temp_tv1 = (TextView) convertView.findViewById(R.id.tmp_tv1);
-                viewHolder.tv_temp_tv2 = (TextView) convertView.findViewById(R.id.tmp_tv2);
-
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
+            if (homeBean != null) {
+                return homeBean.list;
             }
 
-            *//*------------------------- 得到数据  -------------------------*//*
-            //赋值
-            String data = mData.get(position);
-
-            *//*------------------------- 视图和数据的绑定  -------------------------*//*
-            viewHolder.tv_temp_tv1.setText("文本头部" + data);
-            viewHolder.tv_temp_tv2.setText("文本尾部" + data);
-            return convertView;
+            return super.onLoadMore();
         }
     }
-
-
-    private class ViewHolder {
-        TextView tv_temp_tv1;
-        TextView tv_temp_tv2;
-    }*/
 }

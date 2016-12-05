@@ -135,6 +135,7 @@ public abstract class LoadingPager extends FrameLayout {
         public void run() {
             //真正开始记载数据
             LoadedResult temState = initData();
+
             //赋值临时状态给当前的状态
             mCurrentPage = temState.state;
 

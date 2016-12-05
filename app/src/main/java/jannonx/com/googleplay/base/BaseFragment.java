@@ -8,6 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import java.util.List;
+import java.util.Map;
+
 import jannonx.com.googleplay.utils.LogUtils;
 import jannonx.com.googleplay.utils.UIUtils;
 
@@ -70,4 +73,29 @@ public abstract class BaseFragment extends Fragment {
      */
 
     protected abstract LoadingPager.LoadedResult initData();
+
+
+    public LoadingPager.LoadedResult checkState(Object resResult) {
+
+        if (resResult == null) {
+            return LoadingPager.LoadedResult.EMPTY;
+        }
+
+        if (resResult instanceof List) {
+            if (((List) resResult).size() == 0) {
+                return LoadingPager.LoadedResult.EMPTY;
+            }
+        }
+
+        if (resResult instanceof Map) {
+            if (((Map) resResult).size() == 0) {
+                return LoadingPager.LoadedResult.EMPTY;
+            }
+        }
+
+
+        return LoadingPager.LoadedResult.SUCCESS;
+
+
+    }
 }

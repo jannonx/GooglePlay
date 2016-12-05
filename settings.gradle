@@ -1,1 +1,1 @@
-include ':app', ':pagerslidingtabstriplibrary'
+include ':app', ':pagerslidingtabstriplibrary', ':nettest', ':xutils_library'
