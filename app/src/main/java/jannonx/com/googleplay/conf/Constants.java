@@ -12,8 +12,12 @@ import jannonx.com.googleplay.utils.LogUtils;
 public class Constants {
     public static final int DEBUGLEVEL = LogUtils.LEVEL_ALL;
 
+    public static final class PHONES {
+//        public static final int SCREEN_WIDTH ;
+    }
+
     /**
-     * 分类管理
+     * 网址相关
      */
     public static final class URLS {
         public static final String BASEURL = "http://192.168.56.1:8080/GooglePlayServer/";

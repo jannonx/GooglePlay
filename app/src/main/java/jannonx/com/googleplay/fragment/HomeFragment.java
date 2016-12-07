@@ -12,12 +12,12 @@ import android.widget.Toast;
 
 
 import com.google.gson.Gson;
-import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.StringCallback;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.ResponseStream;
+import com.lidroid.xutils.http.client.HttpRequest;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import jannonx.com.googleplay.base.BaseFragment;
 import jannonx.com.googleplay.base.BaseHolder;
@@ -26,14 +26,12 @@ import jannonx.com.googleplay.base.SuperBaseAdapter;
 import jannonx.com.googleplay.bean.AppInfoBean;
 import jannonx.com.googleplay.bean.HomeBean;
 import jannonx.com.googleplay.conf.Constants;
+import jannonx.com.googleplay.factory.ListViewFactory;
 import jannonx.com.googleplay.holder.HomeHolder;
-import jannonx.com.googleplay.holder.LoadMoreHolder;
+import jannonx.com.googleplay.protocol.HomeProtocol;
 import jannonx.com.googleplay.utils.OkUtils;
 import jannonx.com.googleplay.utils.UIUtils;
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+
 
 /**
  * @项目名 GooglePlay
@@ -48,6 +46,7 @@ public class HomeFragment extends BaseFragment {
     private List<AppInfoBean> mAppInfoBeens;
     private List<String> mPictures;
     private LoadingPager.LoadedResult mLoadedResult;
+    private HomeProtocol mProtocol;
 
 
     /**
@@ -57,12 +56,10 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     protected View initSuccessView() {
-        ListView listView = new ListView(UIUtils.getContext());
-        //常规设置
-        listView.setCacheColorHint(Color.TRANSPARENT);
-        //可以快速滑动
-        listView.setFastScrollEnabled(true);
+        ListView listView = ListViewFactory.create();
+
         listView.setAdapter(new HomeAdapter(listView, mAppInfoBeens));
+
         return listView;
     }
 
@@ -74,15 +71,33 @@ public class HomeFragment extends BaseFragment {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected LoadingPager.LoadedResult initData() {
-        SystemClock.sleep(1000);
-
 
         try {
-            String url = Constants.URLS.BASEURL + "home?index=0";
-            String stringFromServer = OkUtils.getStringFromServer(url);
-            Gson gson = new Gson();
+            /**------------------------- okhttp  begin -------------------------*/
 
-            HomeBean homeBean = gson.fromJson(stringFromServer, HomeBean.class);
+//            String url = Constants.URLS.BASEURL + "home?index="+0;
+//            String stringFromServer = OkUtils.getStringFromServer(url);
+//            Gson gson = new Gson();
+//            HomeBean homeBean = gson.fromJson(stringFromServer, HomeBean.class);
+
+
+            /**------------------------- HttpUtils begin  -------------------------*/
+
+//            HttpUtils httpUtils = new HttpUtils();
+//            String url = Constants.URLS.BASEURL + "home";
+//            RequestParams params = new RequestParams();
+//            params.addQueryStringParameter("index", "0");
+//            ResponseStream responseStream = httpUtils.sendSync(HttpRequest.HttpMethod.GET, url, params);
+//            String s = responseStream.readString();
+//            Gson gson = new Gson();
+//            HomeBean homeBean = gson.fromJson(s, HomeBean.class);
+
+
+            /**------------------------- HomeProtocoll begin  -------------------------*/
+
+            mProtocol = new HomeProtocol();
+            HomeBean homeBean = mProtocol.getLoadData(0);
+
 
             //处理json数据
             LoadingPager.LoadedResult state = checkState(homeBean);
@@ -104,7 +119,7 @@ public class HomeFragment extends BaseFragment {
             mPictures = homeBean.picture;
 
             return state;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -135,13 +150,18 @@ public class HomeFragment extends BaseFragment {
         }
 
         private List<AppInfoBean> performLoadMore() throws Exception {
-            SystemClock.sleep(2000);
-            String url = Constants.URLS.BASEURL + "home?index=" + mAppInfoBeens.size();
-            String stringFromServer = OkUtils.getStringFromServer(url);
-            Gson gson = new Gson();
 
-            HomeBean homeBean = gson.fromJson(stringFromServer, HomeBean.class);
+//            String url = Constants.URLS.BASEURL + "home?index=" + mAppInfoBeens.size();
+//            String stringFromServer = OkUtils.getStringFromServer(url);
+//            Gson gson = new Gson();
+//            HomeBean homeBean = gson.fromJson(stringFromServer, HomeBean.class);
 
+
+            /**------------------------- HomeProtocoll begin  -------------------------*/
+
+            HomeBean homeBean = mProtocol.getLoadData(mAppInfoBeens.size());
+
+            /**-------------------------  HomeProtocoll end -------------------------*/
             if (homeBean != null) {
                 return homeBean.list;
             }
