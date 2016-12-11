@@ -12,8 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.Random;
@@ -89,6 +91,11 @@ public class AppFragment extends BaseFragment {
         protected List<AppInfoBean> onLoadMore() throws Exception {
             List<AppInfoBean> loadData = mProtocol.getLoadData(mDatas.size());
             return loadData;
+        }
+
+        @Override
+        protected void onNormalItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Toast.makeText(UIUtils.getContext(), mDatas.get(position).name, Toast.LENGTH_SHORT).show();
         }
     }
 

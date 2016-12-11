@@ -1,5 +1,6 @@
 package jannonx.com.googleplay.base;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
@@ -10,12 +11,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 
 import jannonx.com.googleplay.conf.Constants;
 import jannonx.com.googleplay.utils.FileUtils;
 import jannonx.com.googleplay.utils.IOUtils;
 import jannonx.com.googleplay.utils.LogUtils;
 import jannonx.com.googleplay.utils.OkUtils;
+import jannonx.com.googleplay.utils.UIUtils;
 
 /**
  * @项目名 GooglePlay
@@ -29,11 +32,18 @@ public abstract class BaseProtocol<T> {
 
     public T getLoadData(int size) throws Exception {
 
-        /**从本地获取数据*/
-        T t = getDataFromLocal(size);
+        /**从内存加载数据*/
+        T t = getDataFromMemory(size);
         if (t != null) {
-            LogUtils.sf("从本地获取数据" + getDirFile(size).getAbsolutePath());
+            LogUtils.sf("从内存加载数据" + getInterceKey() + "." + size);
             return t;
+        }
+
+        /**从本地获取数据*/
+        T tt = getDataFromLocal(size);
+        if (tt != null) {
+            LogUtils.sf("从本地获取数据" + getDirFile(size).getAbsolutePath());
+            return tt;
         }
 
         /**从网络获取数据*/
@@ -43,6 +53,30 @@ public abstract class BaseProtocol<T> {
     }
 
     /**
+     * 从内存加载数据
+     *
+     * @param size
+     * @return
+     */
+
+    private T getDataFromMemory(int size) {
+
+        BaseApplication app = (BaseApplication) UIUtils.getContext();
+        Map<String, String> cacheMap = app.getCacheMap();
+
+
+        String filename = getInterceKey() + "." + size;
+
+        String cacheJsonString = cacheMap.get(filename);
+        if (cacheJsonString != null) {
+            return parseJsonStrng(cacheJsonString);
+        }
+
+        return null;
+    }
+
+
+    /**
      * 从本地获取数据
      *
      * @param size
@@ -50,41 +84,42 @@ public abstract class BaseProtocol<T> {
      */
 
     private T getDataFromLocal(int size) {
-
-        File file = getDirFile(size);
-        BufferedReader reader = null;
-        if (file.exists()) {
-            try {
-                reader = new BufferedReader(new FileReader(file));
-                //第一行：读取创建文件的时间
-                String line = reader.readLine();
-                long writeTime = Long.parseLong(line);
-                if (System.currentTimeMillis() - writeTime < PROTOCOLTIME) {
-                    String jsonString = reader.readLine();
-                    /**------------------------- 解析json数据  -------------------------*/
-                    T t = parseJsonStrng(jsonString);
-                    return t;
-
+        try {
+            File file = getDirFile(size);
+            if (file.exists()) {
+                BufferedReader reader = null;
+                try {
+                    reader = new BufferedReader(new FileReader(file));
+                    //第一行：读取创建文件的时间
+                    String line = reader.readLine();
+                    long writeTime = Long.parseLong(line);
+                    if (System.currentTimeMillis() - writeTime < PROTOCOLTIME) {
+                        String jsonString = reader.readLine();
+                        /**------------------------- 解析json数据  -------------------------*/
+                        T t = parseJsonStrng(jsonString);
+                        return t;
+                    }
+                } finally {
+                    IOUtils.close(reader);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                IOUtils.close(reader);
             }
-        }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     /**
-     * 获取本地文件名
+     * d
+     * 获取缓存目录文件
      *
      * @param size
      * @return
      */
     @NonNull
     private File getDirFile(int size) {
-        String dir = FileUtils.getDir("json");//sdcard/Android/data/data包目录/json
+        String dir = FileUtils.getDir("json");////sdcard/Android/data/data包目录/json
         return new File(dir, getInterceKey() + "." + size);
     }
 
@@ -99,18 +134,32 @@ public abstract class BaseProtocol<T> {
         /**------------------------- 获得json数据  -------------------------*/
         String url = Constants.URLS.BASEURL + getInterceKey() + "?index=" + size;
         String stringFromServer = OkUtils.getStringFromServer(url);
-        Gson gson = new Gson();
 
         /**json数据写入本地文件*/
         File dirFile = getDirFile(size);
-        BufferedWriter writer = new BufferedWriter(new FileWriter(dirFile));
-        writer.write(System.currentTimeMillis() + "");
-        writer.newLine();
-        writer.write(stringFromServer);
-        writer.flush();
-        IOUtils.close(writer);
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(dirFile));
+            //写入第一行
+            writer.write(System.currentTimeMillis() + "");
+            //换行
+            writer.newLine();
+            //写入json数据
+            writer.write(stringFromServer);
+        } finally {
 
-        /**------------------------- 解析json数据  -------------------------*/
+            IOUtils.close(writer);
+        }
+
+        /**json数据写入缓存文件*/
+        BaseApplication app = (BaseApplication) UIUtils.getContext();
+        Map<String, String> cacheMap = app.getCacheMap();
+        String key = getInterceKey() + "." + size;
+        cacheMap.put(key, stringFromServer);
+
+
+        /**getDataFromNet解析json数据*/
+        LogUtils.sf("#######从网络获取数据");
         T t = parseJsonStrng(stringFromServer);
         return t;
     }

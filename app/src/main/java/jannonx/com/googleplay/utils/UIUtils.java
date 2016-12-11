@@ -110,4 +110,29 @@ public class UIUtils {
             getHandler().post(task);
         }
     }
+
+
+    /**
+     * dip-->px
+     */
+
+    public static int dip2Px(int dip) {
+        float density = getResources().getDisplayMetrics().density;
+        //px/dip=density
+        return (int) (dip * density + .5f);
+    }
+
+    /**
+     * px-->dip
+     *
+     * @param px
+     * @return
+     */
+    public static int px2Dip(int px) {
+        float density = getResources().getDisplayMetrics().density;
+        //px/dip=density
+        return (int) (px / density + .5f);
+    }
+
+
 }

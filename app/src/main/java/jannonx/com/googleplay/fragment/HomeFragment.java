@@ -28,6 +28,7 @@ import jannonx.com.googleplay.bean.HomeBean;
 import jannonx.com.googleplay.conf.Constants;
 import jannonx.com.googleplay.factory.ListViewFactory;
 import jannonx.com.googleplay.holder.HomeHolder;
+import jannonx.com.googleplay.holder.HomePictureHolder;
 import jannonx.com.googleplay.protocol.HomeProtocol;
 import jannonx.com.googleplay.utils.OkUtils;
 import jannonx.com.googleplay.utils.UIUtils;
@@ -42,10 +43,8 @@ import jannonx.com.googleplay.utils.UIUtils;
 
 public class HomeFragment extends BaseFragment {
 
-    private List<String> mData;
     private List<AppInfoBean> mAppInfoBeens;
     private List<String> mPictures;
-    private LoadingPager.LoadedResult mLoadedResult;
     private HomeProtocol mProtocol;
 
 
@@ -57,6 +56,13 @@ public class HomeFragment extends BaseFragment {
     @Override
     protected View initSuccessView() {
         ListView listView = ListViewFactory.create();
+
+        /**设置listview的head部分*/
+        HomePictureHolder homePictureHolder = new HomePictureHolder();
+        listView.addHeaderView(homePictureHolder.mHodlerView);
+        homePictureHolder.setDataAndBindView(mPictures);
+
+
 
         listView.setAdapter(new HomeAdapter(listView, mAppInfoBeens));
 

@@ -1,6 +1,7 @@
 package jannonx.com.googleplay.factory;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.widget.ListView;
 
 import jannonx.com.googleplay.utils.UIUtils;
@@ -16,10 +17,12 @@ public class ListViewFactory {
 
     public static ListView create() {
         ListView listView = new ListView(UIUtils.getContext());
-        //常规设置
+        //背景无颜色
         listView.setCacheColorHint(Color.TRANSPARENT);
         //可以快速滑动
-        listView.setFastScrollEnabled(true);
+//        listView.setFastScrollEnabled(true);
+        //选择无颜色
+        listView.setSelector(new ColorDrawable(Color.TRANSPARENT));
         return listView;
     }
 }

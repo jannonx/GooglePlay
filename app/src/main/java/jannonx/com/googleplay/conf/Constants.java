@@ -13,7 +13,8 @@ public class Constants {
     public static final int DEBUGLEVEL = LogUtils.LEVEL_ALL;
 
     public static final class PHONES {
-//        public static final int SCREEN_WIDTH ;
+        public static int SCREEN_WIDTH = -1;
+        public static int SCREEN_HEIGHT = -1;
     }
 
     /**

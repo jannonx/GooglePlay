@@ -11,12 +11,23 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.List;
 import java.util.Random;
 
 import jannonx.com.googleplay.base.BaseFragment;
+import jannonx.com.googleplay.base.BaseHolder;
 import jannonx.com.googleplay.base.LoadingPager;
+import jannonx.com.googleplay.base.SuperBaseAdapter;
+import jannonx.com.googleplay.bean.SubjectInfoBean;
+import jannonx.com.googleplay.factory.ListViewFactory;
+import jannonx.com.googleplay.holder.SubjectHolder;
+import jannonx.com.googleplay.protocol.SubjectProtocol;
 import jannonx.com.googleplay.utils.UIUtils;
 
 /**
@@ -28,6 +39,9 @@ import jannonx.com.googleplay.utils.UIUtils;
 
 public class SubjectFragment extends BaseFragment {
 
+    private SubjectProtocol mProtocol;
+    private List<SubjectInfoBean> mData;
+
     /**
      * @desc 正在开始加载数据，在子线程中执行
      * @call 外界调用LoadingPager的triggerLoadDate()的时候
@@ -35,10 +49,9 @@ public class SubjectFragment extends BaseFragment {
 
     @Override
     protected View initSuccessView() {
-        TextView textView = new TextView(UIUtils.getContext());
-        textView.setText(this.getClass().getSimpleName());
-        textView.setGravity(Gravity.CENTER);
-        return textView;
+        ListView listView = ListViewFactory.create();
+        listView.setAdapter(new SubjectAdapter(listView, mData));
+        return listView;
     }
 
     /**
@@ -48,16 +61,38 @@ public class SubjectFragment extends BaseFragment {
 
     @Override
     protected LoadingPager.LoadedResult initData() {
-        SystemClock.sleep(2000);
-//        private static final int STATE_ERRORVIEW = 1;//失败
-//        private static final int STATE_EMPTYVIEW = 2;//空
-//        private static final int STATE_SUCCESSVIEW = 3;//成功
 
-        LoadingPager.LoadedResult[] loadedResults = {LoadingPager.LoadedResult.EMPTY,
-                LoadingPager.LoadedResult.ERROR, LoadingPager.LoadedResult.SUCCESS};
+        mProtocol = new SubjectProtocol();
+        try {
+            mData = mProtocol.getLoadData(0);
+            return checkState(mData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return LoadingPager.LoadedResult.ERROR;
+        }
+    }
 
-        Random random = new Random();
-        int nextInt = random.nextInt(loadedResults.length);
-        return loadedResults[nextInt];
+
+    class SubjectAdapter extends SuperBaseAdapter<SubjectInfoBean> {
+
+
+        public SubjectAdapter(AbsListView absListView, List<SubjectInfoBean> data) {
+            super(absListView, data);
+        }
+
+        @Override
+        protected BaseHolder<SubjectInfoBean> getSpecialHolder() {
+            return new SubjectHolder();
+        }
+
+        @Override
+        protected boolean hasLoadMore() {
+            return false;
+        }
+
+//        @Override
+//        protected void onNormalItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            Toast.makeText(UIUtils.getContext(),mData.get(position).des,Toast.LENGTH_SHORT).show();
+//        }
     }
 }

@@ -24,7 +24,7 @@ import jannonx.com.googleplay.utils.UIUtils;
  * @项目名 GooglePlay
  * @创建者 jannonx
  * @创建时间 2016/12/1-下午7:11
- * @描述信息 desc
+ * @描述信息 推荐页面
  */
 
 public class RecommandFragment extends BaseFragment {

@@ -195,7 +195,6 @@ public abstract class SuperBaseAdapter<ITEMBEANTYPE> extends BaseAdapter impleme
             List<ITEMBEANTYPE> loadMoreData = null;
             //正在的在子线程中加载更多
             try {
-
                 loadMoreData = onLoadMore();
                 if (loadMoreData.size() < PAGERSIZE) {
                     state = LoadMoreHolder.LOADMORE_NONE;//没有加载更多
