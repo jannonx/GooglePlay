@@ -18,13 +18,19 @@ public class RatioLayout extends FrameLayout {
     /**
      * 已知宽度，计算高度
      */
-    private static final int RELATIVE_WIDTH = 0;
+    public static final int RELATIVE_WIDTH = 0;
     /**
      * 已知高度，计算宽度
      */
-    private static final int RELATIVE_HEIGHT = 1;
-    private float mRatio = 0.0f;//图片的宽高比
-    //默认已知宽度
+    public static final int RELATIVE_HEIGHT = 1;
+
+    /**
+     * 图片的宽高比
+     */
+    private float mRatio = 0.0f;
+    /**
+     * 1.默认已知宽度,动态计算高度；2.已知高度，计算宽度
+     */
     private int relative = RELATIVE_WIDTH;
 
     public RatioLayout(Context context) {
@@ -37,6 +43,14 @@ public class RatioLayout extends FrameLayout {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RatioLayout);
         mRatio = typedArray.getFloat(R.styleable.RatioLayout_picRation, 0.0f);
         relative = typedArray.getInt(R.styleable.RatioLayout_relative, relative);
+    }
+
+    public void setRatio(float ratio) {
+        mRatio = ratio;
+    }
+
+    public void setRelative(int relative) {
+        this.relative = relative;
     }
 
     @Override

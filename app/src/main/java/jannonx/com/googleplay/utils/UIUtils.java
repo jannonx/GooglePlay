@@ -55,6 +55,17 @@ public class UIUtils {
     }
 
     /**
+     * 得到string.xml中的字符串，带占位符
+     *
+     * @return
+     */
+    public static String getString(int id, Object... formatArgs) {
+        return getResources().getString(id, formatArgs);
+    }
+
+
+
+    /**
      * color.xml中的颜色值
      *
      * @return

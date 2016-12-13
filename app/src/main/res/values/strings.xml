@@ -9,4 +9,9 @@
         <item>分类</item>
         <item>排行</item>
     </string-array>
+
+    <string name="info_downloadnum">下载量:%1$s</string>
+    <string name="info_size">大小:%1$s</string>
+    <string name="info_version">版本:%1$s</string>
+    <string name="info_date">日期:%1$s</string>
 </resources>

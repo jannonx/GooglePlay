@@ -21,6 +21,7 @@ import java.util.List;
 
 import jannonx.com.googleplay.base.BaseFragment;
 import jannonx.com.googleplay.base.BaseHolder;
+import jannonx.com.googleplay.base.BaseItemAdapter;
 import jannonx.com.googleplay.base.LoadingPager;
 import jannonx.com.googleplay.base.SuperBaseAdapter;
 import jannonx.com.googleplay.bean.AppInfoBean;
@@ -134,25 +135,15 @@ public class HomeFragment extends BaseFragment {
     }
 
 
-    class HomeAdapter extends SuperBaseAdapter<AppInfoBean> {
+    class HomeAdapter extends BaseItemAdapter {
 
         public HomeAdapter(AbsListView absListView, List<AppInfoBean> data) {
             super(absListView, data);
         }
 
         @Override
-        protected BaseHolder<AppInfoBean> getSpecialHolder() {
-            return new HomeHolder();
-        }
-
-        @Override
         protected List<AppInfoBean> onLoadMore() throws Exception {
             return performLoadMore();
-        }
-
-        @Override
-        protected void onNormalItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Toast.makeText(UIUtils.getContext(), mAppInfoBeens.get(position).packageName, Toast.LENGTH_SHORT).show();
         }
 
         private List<AppInfoBean> performLoadMore() throws Exception {

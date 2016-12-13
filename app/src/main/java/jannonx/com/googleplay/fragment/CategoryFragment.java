@@ -9,12 +9,24 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.List;
 import java.util.Random;
 
 import jannonx.com.googleplay.base.BaseFragment;
+import jannonx.com.googleplay.base.BaseHolder;
 import jannonx.com.googleplay.base.LoadingPager;
+import jannonx.com.googleplay.base.SuperBaseAdapter;
+import jannonx.com.googleplay.bean.CategoryBean;
+import jannonx.com.googleplay.factory.ListViewFactory;
+import jannonx.com.googleplay.holder.CategoryNormalHolder;
+import jannonx.com.googleplay.holder.CategoryTitleHolder;
+import jannonx.com.googleplay.protocol.CategoryProtocol;
+import jannonx.com.googleplay.utils.LogUtils;
 import jannonx.com.googleplay.utils.UIUtils;
 
 /**
@@ -26,6 +38,8 @@ import jannonx.com.googleplay.utils.UIUtils;
 
 public class CategoryFragment extends BaseFragment {
 
+    private List<CategoryBean> mData;
+
     /**
      * @desc 正在开始加载数据，在子线程中执行
      * @call 外界调用LoadingPager的triggerLoadDate()的时候
@@ -33,10 +47,9 @@ public class CategoryFragment extends BaseFragment {
 
     @Override
     protected View initSuccessView() {
-        TextView textView = new TextView(UIUtils.getContext());
-        textView.setText(this.getClass().getSimpleName());
-        textView.setGravity(Gravity.CENTER);
-        return textView;
+        ListView listView = ListViewFactory.create();
+        listView.setAdapter(new CategoryAdapter(listView, mData));
+        return listView;
     }
 
     /**
@@ -46,16 +59,53 @@ public class CategoryFragment extends BaseFragment {
 
     @Override
     protected LoadingPager.LoadedResult initData() {
-        SystemClock.sleep(2000);
-//        private static final int STATE_ERRORVIEW = 1;//失败
-//        private static final int STATE_EMPTYVIEW = 2;//空
-//        private static final int STATE_SUCCESSVIEW = 3;//成功
+        CategoryProtocol protocol = new CategoryProtocol();
+        try {
+            mData = protocol.getLoadData(0);
+            LogUtils.sf(mData.toString());
+            return checkState(mData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return LoadingPager.LoadedResult.ERROR;
+        }
+    }
 
-        LoadingPager.LoadedResult[] loadedResults = {LoadingPager.LoadedResult.EMPTY,
-                LoadingPager.LoadedResult.ERROR, LoadingPager.LoadedResult.SUCCESS};
+    private class CategoryAdapter extends SuperBaseAdapter<CategoryBean> {
 
-        Random random = new Random();
-        int nextInt = random.nextInt(loadedResults.length);
-        return loadedResults[nextInt];
+        public CategoryAdapter(AbsListView absListView, List<CategoryBean> data) {
+            super(absListView, data);
+        }
+
+        @Override
+        protected BaseHolder<CategoryBean> getSpecialHolder(int position) {
+            CategoryBean categoryBean = mData.get(position);
+            if (categoryBean.isTitle) {
+                LogUtils.sf("CategoryTitleHolderCategoryTitleHolderCategoryTitleHolder....");
+                return new CategoryTitleHolder();
+            } else {
+                return new CategoryNormalHolder();
+            }
+
+        }
+
+        @Override
+        protected boolean hasLoadMore() {
+            return false;
+        }
+
+        @Override
+        public int getViewTypeCount() {//2+1
+            return super.getViewTypeCount() + 1;
+        }
+
+        @Override
+        protected int getNormalItemViewType(int position) {
+            CategoryBean categoryBean = mData.get(position);
+            if (categoryBean.isTitle) {
+                return 1;
+            } else {
+                return 2;
+            }
+        }
     }
 }

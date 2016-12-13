@@ -4,16 +4,15 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 
 
+import android.graphics.drawable.StateListDrawable;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
 import java.util.Random;
-
 import jannonx.com.googleplay.R;
 import jannonx.com.googleplay.base.BaseFragment;
 import jannonx.com.googleplay.base.LoadingPager;
@@ -53,8 +52,9 @@ public class HotFragment extends BaseFragment {
             //设置背景
             tv.setBackgroundResource(R.drawable.shape_hot_bg);
 
-            GradientDrawable gradientDrawabel = new GradientDrawable();
-            gradientDrawabel.setCornerRadius(10);//圆角
+            //正常的背景状态
+            GradientDrawable normalBg = new GradientDrawable();
+            normalBg.setCornerRadius(10);//圆角
             int alpha = 255;//不透明
             Random rand = new Random();
 
@@ -62,8 +62,21 @@ public class HotFragment extends BaseFragment {
             int green = rand.nextInt(170) + 30;//30~200
             int blue = rand.nextInt(170) + 30;//30~200
             int argb = Color.argb(alpha, red, green, blue);
-            gradientDrawabel.setColor(argb);//背景颜色
-            tv.setBackground(gradientDrawabel);
+            normalBg.setColor(argb);//背景颜色
+
+
+            //按下的背景状态
+            GradientDrawable presseBg = new GradientDrawable();
+            presseBg.setCornerRadius(10);//圆角
+            presseBg.setColor(Color.DKGRAY);
+
+            StateListDrawable stateListDrawable = new StateListDrawable();
+            //注意先后顺序，按下状态设置在正常状态的上面
+            stateListDrawable.addState(new int[]{android.R.attr.state_pressed}, presseBg);
+            stateListDrawable.addState(new int[]{}, normalBg);
+
+            tv.setBackground(stateListDrawable);
+            tv.setClickable(true);
 
             final String infos = info;
             tv.setOnClickListener(new View.OnClickListener() {

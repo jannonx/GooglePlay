@@ -21,6 +21,7 @@ import java.util.Random;
 
 import jannonx.com.googleplay.base.BaseFragment;
 import jannonx.com.googleplay.base.BaseHolder;
+import jannonx.com.googleplay.base.BaseItemAdapter;
 import jannonx.com.googleplay.base.LoadingPager;
 import jannonx.com.googleplay.base.SuperBaseAdapter;
 import jannonx.com.googleplay.bean.AppInfoBean;
@@ -61,17 +62,6 @@ public class GameFragment extends BaseFragment {
     @Override
     protected LoadingPager.LoadedResult initData() {
         SystemClock.sleep(2000);
-//        private static final int STATE_ERRORVIEW = 1;//失败
-//        private static final int STATE_EMPTYVIEW = 2;//空
-//        private static final int STATE_SUCCESSVIEW = 3;//成功
-
-//        LoadingPager.LoadedResult[] loadedResults = {LoadingPager.LoadedResult.EMPTY,
-//                LoadingPager.LoadedResult.ERROR, LoadingPager.LoadedResult.SUCCESS};
-//
-//        Random random = new Random();
-//        int nextInt = random.nextInt(loadedResults.length);
-//        return loadedResults[nextInt];
-
         mProtocol = new GameProtocol();
         try {
             mData = mProtocol.getLoadData(0);
@@ -83,18 +73,11 @@ public class GameFragment extends BaseFragment {
 
     }
 
-    class GameAdapter extends SuperBaseAdapter<AppInfoBean> {
+    class GameAdapter extends BaseItemAdapter {
 
         public GameAdapter(AbsListView absListView, List<AppInfoBean> data) {
             super(absListView, data);
         }
-
-        @Override
-        protected BaseHolder<AppInfoBean> getSpecialHolder() {
-            return new ItemHolder();
-
-        }
-
         @Override
         protected List<AppInfoBean> onLoadMore() throws Exception {
 

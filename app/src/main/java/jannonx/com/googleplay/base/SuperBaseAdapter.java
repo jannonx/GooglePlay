@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public abstract class SuperBaseAdapter<ITEMBEANTYPE> extends BaseAdapter impleme
     private static final int VIEWTYPE_LOADMORE = 0;
     private static final int VIEWTYPE_NORMAL = 1;
     private static final int PAGERSIZE = 20;
-    private List<ITEMBEANTYPE> mData = new ArrayList<>();
+    protected List<ITEMBEANTYPE> mData = new ArrayList<>();
     private LoadMoreHolder mLoadMoreHolder;
     private LoadMoreTask mTask;
     private AbsListView mAbsListView;
@@ -73,7 +74,7 @@ public abstract class SuperBaseAdapter<ITEMBEANTYPE> extends BaseAdapter impleme
                 homeHolder = (BaseHolder<ITEMBEANTYPE>) getLoadMoreHolder();
             } else {
                 //普通视图
-                homeHolder = getSpecialHolder();
+                homeHolder = getSpecialHolder(position);
             }
         } else {
             homeHolder = (BaseHolder) convertView.getTag();
@@ -153,8 +154,18 @@ public abstract class SuperBaseAdapter<ITEMBEANTYPE> extends BaseAdapter impleme
         if (position == getCount() - 1) {
             return VIEWTYPE_LOADMORE;
         } else {
-            return VIEWTYPE_NORMAL;
+            return getNormalItemViewType(position);
         }
+    }
+
+    /**
+     * @param position
+     * @return
+     * @des 显示条目有更多样式，覆写该方法
+     * @des
+     */
+    protected int getNormalItemViewType(int position) {
+        return 1;
     }
 
     @Override
@@ -166,11 +177,14 @@ public abstract class SuperBaseAdapter<ITEMBEANTYPE> extends BaseAdapter impleme
      * @return BaseHolder的具体子类对象
      * @desc 必须实现，但是不知道具体的实现，定义成为抽象方法，交给子类集体实现
      */
-    protected abstract BaseHolder<ITEMBEANTYPE> getSpecialHolder();
+    protected abstract BaseHolder<ITEMBEANTYPE> getSpecialHolder(int position);
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        //除去listview的viewpager所占的位置
+        if (mAbsListView instanceof ListView) {
+            position = position - ((ListView) mAbsListView).getHeaderViewsCount();
+        }
         //判断item的类型
         if (getItemViewType(position) == VIEWTYPE_LOADMORE) {
             triggerLoadMore();

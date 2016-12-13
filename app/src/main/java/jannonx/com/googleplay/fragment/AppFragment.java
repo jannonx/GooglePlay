@@ -22,6 +22,7 @@ import java.util.Random;
 
 import jannonx.com.googleplay.base.BaseFragment;
 import jannonx.com.googleplay.base.BaseHolder;
+import jannonx.com.googleplay.base.BaseItemAdapter;
 import jannonx.com.googleplay.base.LoadingPager;
 import jannonx.com.googleplay.base.SuperBaseAdapter;
 import jannonx.com.googleplay.bean.AppInfoBean;
@@ -38,6 +39,7 @@ import jannonx.com.googleplay.utils.UIUtils;
  */
 
 public class AppFragment extends BaseFragment {
+
 
     private AppProtocol mProtocol;
     private List<AppInfoBean> mDatas;
@@ -76,15 +78,10 @@ public class AppFragment extends BaseFragment {
     }
 
 
-    class AppAdapter extends SuperBaseAdapter<AppInfoBean> {
+    class AppAdapter extends BaseItemAdapter {
 
         public AppAdapter(AbsListView absListView, List<AppInfoBean> data) {
             super(absListView, data);
-        }
-
-        @Override
-        protected BaseHolder<AppInfoBean> getSpecialHolder() {
-            return new AppHolder();
         }
 
         @Override
@@ -93,10 +90,6 @@ public class AppFragment extends BaseFragment {
             return loadData;
         }
 
-        @Override
-        protected void onNormalItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Toast.makeText(UIUtils.getContext(), mDatas.get(position).name, Toast.LENGTH_SHORT).show();
-        }
     }
 
 }

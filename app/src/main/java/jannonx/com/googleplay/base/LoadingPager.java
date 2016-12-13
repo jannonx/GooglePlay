@@ -33,6 +33,7 @@ public abstract class LoadingPager extends FrameLayout {
         initCommonViews();
     }
 
+
     /**
      * @desc 初始化常规视图(加载页面，错误页面，空页面)
      * @call LoadingPager初始化

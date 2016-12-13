@@ -81,7 +81,7 @@ public class SubjectFragment extends BaseFragment {
         }
 
         @Override
-        protected BaseHolder<SubjectInfoBean> getSpecialHolder() {
+        protected BaseHolder<SubjectInfoBean> getSpecialHolder(int position) {
             return new SubjectHolder();
         }
 
